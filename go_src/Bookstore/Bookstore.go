@@ -2,40 +2,55 @@ package BookStore
 
 /*
 #cgo CFLAGS: -I/Users/hzq/VSCodeProject/cgo-thrift/include -Wvisibility
-#cgo LDFLAGS: -L/Users/hzq/VSCodeProject/cgo-thrift/build -lbookstore_c -lbookstore -lstdc++
+#cgo LDFLAGS: -L/Users/hzq/VSCodeProject/cgo-thrift/build -lbookstore_c -lbookstore -lthrift -lstdc++
 #include "BookStoreWrapper.h"
 #include <stdlib.h>
 */
 import "C"
-import "unsafe"
+import (
+	thriftTypes "cgo-thrift/gen_src/gen-go/types"
+	"context"
+	"unsafe"
+	"fmt"
 
-type Book struct {
-	Name  string
-	Price int64
-}
+	"github.com/apache/thrift/lib/go/thrift"
+)
 
 type BookStore struct {
 	BookStoreCPtr unsafe.Pointer
 }
 
-// ParseBook Convert a Go struct Book to a C Book struct pointer
-func ParseBook(book Book) *C.struct_CBook {
-	cs := C.CString(book.Name)
-	defer C.free(unsafe.Pointer(cs))
-	var res = C.parse(cs, C.longlong(book.Price))
-	return (*C.struct_CBook)(res)
+var defaultCtx = context.Background()
+
+func HasBook(bookStoreCPtr unsafe.Pointer, book thriftTypes.Book) bool {
+	mem_buffer := thrift.NewTMemoryBufferLen(1024)
+	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
+	
+	printAndPanicError(book.Write(context.Background(), protocol))
+
+	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
+	size := mem_buffer.Len()
+
+	return bool(C.hasBook(bookStoreCPtr, ptr, C.uint(size)))
 }
 
-func HasBook(bookStoreCPtr unsafe.Pointer, book Book) bool {
-	cbook := ParseBook(book)
-	return bool(C.hasBook(bookStoreCPtr, cbook))
-}
+func AddBook(bookStoreCPtr unsafe.Pointer, book thriftTypes.Book) {
+	mem_buffer := thrift.NewTMemoryBufferLen(1024)
+	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
+	printAndPanicError(book.Write(defaultCtx, protocol))
+	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
+	size := mem_buffer.Len()
 
-func AddBook(bookStoreCPtr unsafe.Pointer, book Book) {
-	cbook := ParseBook(book)
-	C.addBook(bookStoreCPtr, cbook)
+	C.addBook(bookStoreCPtr, ptr, C.uint(size))
 }
 
 func InitBookStore() unsafe.Pointer {
 	return C.initBookStore()
+}
+
+func printAndPanicError(err error) {
+	if err != nil {
+		fmt.Println("Error ", err)
+		panic(err)
+	}
 }

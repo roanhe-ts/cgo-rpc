@@ -1,13 +1,10 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-typedef struct CBook CBook;
 
 void* initBookStore();
 void freeBookStore(void*);
 
-bool hasBook(void* bookStore, struct CBook* book);
+bool hasBook(void* bookStore, void* binanry_book, uint32_t size);
 
-void addBook(void* bookStore, struct CBook* book);
-
-struct CBook* parse(char* name, int64_t);
+void addBook(void* bookStore, void* binanry_book, uint32_t size);

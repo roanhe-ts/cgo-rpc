@@ -1,11 +1,11 @@
-#include "BookStore.h"
+#include "Bookstore.h"
 
-void BookStore::addBook(const Book &book_)
+void BookStore::addBook(const CXX::Book &book_)
 {
     books.push_back(book_);
 }
 
-bool BookStore::hasBook(const Book &book_)
+bool BookStore::hasBook(const CXX::Book &book_)
 {
     for (const auto& book : books)
     {

@@ -1,1 +1,4 @@
 build/*
+gen_src/gen-*
+.cache/
+compile_commands.json
