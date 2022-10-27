@@ -44,3 +44,11 @@ target_link_libraries(bookstore PUBLIC thrift)
 add_library(bookstore_c STATIC ${CMAKE_SOURCE_DIR}/src/BookstoreWrapper.cpp)
 target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
 target_link_libraries(bookstore_c PUBLIC bookstore thrift)
+
+
+add_custom_target(bookstore_go
+    go
+    build
+    -o ${PROJECT_BINARY_DIR}/bookstore_go
+    ${PROJECT_SOURCE_DIR}/main.go
+)
