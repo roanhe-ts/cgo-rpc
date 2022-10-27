@@ -1,6 +1,7 @@
 # cgo thrift
 ### Prerequest
 * thrift devel is installed in your system
+
 ### Build
 ```sh
 # build wrapper library

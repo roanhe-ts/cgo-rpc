@@ -13,7 +13,7 @@
 #include <thrift/transport/TBufferTransports.h>
 #include <iostream>
 
-std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_protocol(
+static std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_protocol(
         std::shared_ptr<apache::thrift::transport::TMemoryBuffer> mem, 
         bool compact)
 {
@@ -26,6 +26,28 @@ std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_protocol
                 tproto_factory;
         return tproto_factory.getProtocol(mem);
     }
+}
+
+static template<typename ThriftT> 
+ThriftT deserializeFromBinanry(void* buffer, uint32_t size)
+{
+    uint8_t* binary_book = static_cast<uint8_t*>(buffer);
+    std::shared_ptr<apache::thrift::transport::TMemoryBuffer> tmem_transport(
+            new apache::thrift::transport::TMemoryBuffer(binary_book, size));
+    std::shared_ptr<apache::thrift::protocol::TProtocol> tproto = create_deserialize_protocol(tmem_transport, false);
+
+    ThriftT thrift_type;
+    try
+    {
+        thrift_type.read(tproto.get());
+    } 
+    catch (std::exception& e)
+    {
+        std::cout << "Couldn't deserialize thrift msg: " << e.what() << std::endl;
+        exit(-1);
+    }
+
+    return thrift_type;
 }
 
 extern "C"
@@ -47,45 +69,18 @@ void freeBookStore(void* bookStore)
     return;
 }
 
-bool hasBook(void* bookStore, void* go_book, uint32_t size)
+bool hasBook(void* bookStore, void* buffer, uint32_t size)
 {
-    uint8_t* binary_book = static_cast<uint8_t*>(go_book);
-    std::shared_ptr<apache::thrift::transport::TMemoryBuffer> tmem_transport(
-            new apache::thrift::transport::TMemoryBuffer(binary_book, size));
-    std::shared_ptr<apache::thrift::protocol::TProtocol> tproto = create_deserialize_protocol(tmem_transport, false);
-    CXX::Book cxxbook;
-    try {
-        cxxbook.read(tproto.get());
-    } catch (std::exception& e) {
-        std::cout << "Couldn't deserialize thrift msg: " << e.what() << std::endl;
-        exit(-1);
-    }
-    
+    CXX::Book cxxbook = deserializeFromBinanry<CXX::Book>(buffer, size);    
     BookStore* bstore = static_cast<BookStore*>(bookStore);
     return bstore->hasBook(cxxbook);
 }
 
-void addBook(void* bookStore, void* go_book, uint32_t size)
+void addBook(void* bookStore, void* buffer, uint32_t size)
 {
-    uint8_t* binary_book = static_cast<uint8_t*>(go_book);
-    std::shared_ptr<apache::thrift::transport::TMemoryBuffer> tmem_transport(
-            new apache::thrift::transport::TMemoryBuffer(binary_book, size));
-    std::shared_ptr<apache::thrift::protocol::TProtocol> tproto = create_deserialize_protocol(tmem_transport, false);
-    CXX::Book cxxbook;
-    try {
-        cxxbook.read(tproto.get());
-    } catch (std::exception& e) {
-        std::cout << "Couldn't deserialize thrift msg: " << e.what() << std::endl;
-        exit(-1);
-    }
-    
-    
+    CXX::Book cxxbook = deserializeFromBinanry<CXX::Book>(buffer, size);
     BookStore* bstore = static_cast<BookStore*>(bookStore);
     bstore->addBook(cxxbook);
-
-    std::cout << "Added book: ";
-    cxxbook.printTo(std::cout);
-
     return;
 }
 
