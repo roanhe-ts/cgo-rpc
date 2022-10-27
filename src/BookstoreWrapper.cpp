@@ -31,15 +31,15 @@ static std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_p
 static template<typename ThriftT> 
 ThriftT deserializeFromBinanry(void* buffer, uint32_t size)
 {
-    uint8_t* binary_book = static_cast<uint8_t*>(buffer);
+    uint8_t* binary_buffer = static_cast<uint8_t*>(buffer);
     std::shared_ptr<apache::thrift::transport::TMemoryBuffer> tmem_transport(
-            new apache::thrift::transport::TMemoryBuffer(binary_book, size));
-    std::shared_ptr<apache::thrift::protocol::TProtocol> tproto = create_deserialize_protocol(tmem_transport, false);
+            new apache::thrift::transport::TMemoryBuffer(binary_buffer, size));
+    std::shared_ptr<apache::thrift::protocol::TProtocol> proto = create_deserialize_protocol(tmem_transport, false);
 
     ThriftT thrift_type;
     try
     {
-        thrift_type.read(tproto.get());
+        thrift_type.read(proto.get());
     } 
     catch (std::exception& e)
     {

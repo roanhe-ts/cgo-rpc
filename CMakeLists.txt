@@ -51,4 +51,7 @@ add_custom_target(bookstore_go
     build
     -o ${PROJECT_BINARY_DIR}/bookstore_go
     ${PROJECT_SOURCE_DIR}/main.go
+
+    DEPENDS
+        THRIFT_GO_GENS
 )
