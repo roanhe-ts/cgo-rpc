@@ -1,13 +1,13 @@
 package main
 
 import (
+	bookstore "bookstore"
 	thriftTypes "cgo-thrift/gen_src/gen-go/types"
-	bookStore "cgo-thrift/go_src/BookStore"
 )
 
 func main() {
-	bs := bookStore.BookStore{}
-	bs.BookStoreCPtr = bookStore.InitBookStore()
+	bs := bookstore.BookStore{}
+	bs.BookStoreCPtr = bookstore.InitBookStore()
 
 	book := thriftTypes.Book{
 		Author: &thriftTypes.Author{
@@ -18,9 +18,9 @@ func main() {
 		Price: 112,
 	}
 
-	bookStore.AddBook(bs.BookStoreCPtr, book)
+	bookstore.AddBook(bs.BookStoreCPtr, book)
 
-	if bookStore.HasBook(bs.BookStoreCPtr, book) {
+	if bookstore.HasBook(bs.BookStoreCPtr, book) {
 		println("Add succed")
 	}
 
