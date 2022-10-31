@@ -1,8 +1,8 @@
 package main
 
 import (
-	bookstore "bookstore"
 	thriftTypes "cgo-thrift/gen_src/gen-go/types"
+	bookstore "cgo-thrift/src/bookstore"
 )
 
 func main() {
