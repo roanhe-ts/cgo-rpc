@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include "../gen_src/gen-cpp/Types_types.h"
+#include "gen-src/gen-cpp/Types_types.h"
 
 class BookStore
 {
@@ -13,4 +13,6 @@ public:
 
     bool hasBook(const CXX::Book& book);
     void addBook(const CXX::Book& book);
+
+    CXX::Orders getOrders();
 };

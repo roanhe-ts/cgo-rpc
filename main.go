@@ -1,8 +1,9 @@
 package main
 
 import (
-	thriftTypes "cgo-thrift/gen_src/gen-go/types"
-	bookstore "cgo-thrift/src/bookstore"
+	thriftTypes "cgo-thrift/gen-src/gen-go/types"
+	bookstore "cgo-thrift/go-src/Bookstore"
+	"fmt"
 )
 
 func main() {
@@ -23,6 +24,9 @@ func main() {
 	if bookstore.HasBook(bs.BookStoreCPtr, book) {
 		println("Add succed")
 	}
+
+	orders := bookstore.GetOrders(bs.BookStoreCPtr)
+	fmt.Println(orders.String())
 
 	return
 }

@@ -1,4 +1,6 @@
 #include "Bookstore.h"
+#include <map>
+#include <string>
 
 void BookStore::addBook(const CXX::Book &book_)
 {
@@ -14,4 +16,13 @@ bool BookStore::hasBook(const CXX::Book &book_)
     }
 
     return false;
+}
+
+CXX::Orders BookStore::getOrders()
+{
+    CXX::Orders orders;
+    std::set<std::string> books {"Red son"};
+    
+    orders.entry["DDDD"] = books;
+    return orders;
 }
