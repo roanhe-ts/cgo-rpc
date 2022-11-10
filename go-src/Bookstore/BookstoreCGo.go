@@ -17,13 +17,13 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 )
 
-type BookStore struct {
+type BookStoreCgo struct {
 	BookStoreCPtr unsafe.Pointer
 }
 
 var defaultCtx = context.Background()
 
-func (bs *BookStore) HasBook(book thriftTypes.Book) bool {
+func (bs *BookStoreCgo) HasBook(book thriftTypes.Book) bool {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
 
@@ -35,7 +35,7 @@ func (bs *BookStore) HasBook(book thriftTypes.Book) bool {
 	return bool(C.hasBook(bs.BookStoreCPtr, ptr, C.uint(size)))
 }
 
-func (bs *BookStore) AddBook(book thriftTypes.Book) {
+func (bs *BookStoreCgo) AddBook(book thriftTypes.Book) {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
 	printAndPanicError(book.Write(defaultCtx, protocol))
@@ -62,7 +62,7 @@ func TranslateCBinary2GoBinary(c *C.struct_binary) *bytes.Buffer {
 	return &res
 }
 
-func (bs *BookStore) GetOrders() (orders thriftTypes.Orders) {
+func (bs *BookStoreCgo) GetOrders() (orders thriftTypes.Orders) {
 	cbinary := C.getOrders(bs.BookStoreCPtr)
 	gobinary := TranslateCBinary2GoBinary(cbinary)
 	// Must free c binary after copy.
@@ -74,7 +74,7 @@ func (bs *BookStore) GetOrders() (orders thriftTypes.Orders) {
 	return orders
 }
 
-func (bs *BookStore) AddOrder(order thriftTypes.Order) {
+func (bs *BookStoreCgo) AddOrder(order thriftTypes.Order) {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
 
