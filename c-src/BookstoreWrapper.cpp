@@ -1,5 +1,6 @@
 #include "cpp-src/Bookstore.h"
 #include "cpp-src/Serialization.h"
+#include "gen-src/gen-cpp/Types_types.h"
 #include "thrift/protocol/TProtocol.h"
 #include <cstddef>
 #include <cstdlib>
@@ -57,6 +58,13 @@ binary* getOrders(void* bookStore)
     CXX::Orders orders = bstore->getOrders();
     global_serializer.serialize<CXX::Orders>(&orders, &res_binary->size, (uint8_t**)(&res_binary->buffer));
     return res_binary;
+}
+
+void addOrder(void* bookStore, void* buffer, uint32_t size)
+{
+    CXX::Order cxxorder = deserializeFromBinanry<CXX::Order>(buffer, size);
+    BookStore* bstore = static_cast<BookStore*>(bookStore);
+    bstore->addOrder(cxxorder);
 }
 
 }

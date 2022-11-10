@@ -26,6 +26,8 @@ class Author;
 
 class Book;
 
+class Order;
+
 class Orders;
 
 
@@ -118,6 +120,49 @@ class Book : public virtual ::apache::thrift::TBase {
 void swap(Book &a, Book &b);
 
 std::ostream& operator<<(std::ostream& out, const Book& obj);
+
+
+class Order : public virtual ::apache::thrift::TBase {
+ public:
+
+  Order(const Order&);
+  Order& operator=(const Order&);
+  Order() noexcept
+        : customer_name(),
+          book_name() {
+  }
+
+  virtual ~Order() noexcept;
+  std::string customer_name;
+  std::string book_name;
+
+  void __set_customer_name(const std::string& val);
+
+  void __set_book_name(const std::string& val);
+
+  bool operator == (const Order & rhs) const
+  {
+    if (!(customer_name == rhs.customer_name))
+      return false;
+    if (!(book_name == rhs.book_name))
+      return false;
+    return true;
+  }
+  bool operator != (const Order &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Order & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(Order &a, Order &b);
+
+std::ostream& operator<<(std::ostream& out, const Order& obj);
 
 
 class Orders : public virtual ::apache::thrift::TBase {

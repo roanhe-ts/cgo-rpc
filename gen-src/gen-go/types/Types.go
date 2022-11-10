@@ -363,6 +363,154 @@ func (p *Book) String() string {
 }
 
 // Attributes:
+//  - CustomerName
+//  - BookName
+type Order struct {
+  CustomerName string `thrift:"customer_name,1,required" db:"customer_name" json:"customer_name"`
+  BookName string `thrift:"book_name,2,required" db:"book_name" json:"book_name"`
+}
+
+func NewOrder() *Order {
+  return &Order{}
+}
+
+
+func (p *Order) GetCustomerName() string {
+  return p.CustomerName
+}
+
+func (p *Order) GetBookName() string {
+  return p.BookName
+}
+func (p *Order) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+  var issetCustomerName bool = false;
+  var issetBookName bool = false;
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField1(ctx, iprot); err != nil {
+          return err
+        }
+        issetCustomerName = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 2:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField2(ctx, iprot); err != nil {
+          return err
+        }
+        issetBookName = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  if !issetCustomerName{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field CustomerName is not set"));
+  }
+  if !issetBookName{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field BookName is not set"));
+  }
+  return nil
+}
+
+func (p *Order)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(ctx); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.CustomerName = v
+}
+  return nil
+}
+
+func (p *Order)  ReadField2(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(ctx); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.BookName = v
+}
+  return nil
+}
+
+func (p *Order) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "Order"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(ctx, oprot); err != nil { return err }
+    if err := p.writeField2(ctx, oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *Order) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "customer_name", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:customer_name: ", p), err) }
+  if err := oprot.WriteString(ctx, string(p.CustomerName)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.customer_name (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:customer_name: ", p), err) }
+  return err
+}
+
+func (p *Order) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "book_name", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:book_name: ", p), err) }
+  if err := oprot.WriteString(ctx, string(p.BookName)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.book_name (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:book_name: ", p), err) }
+  return err
+}
+
+func (p *Order) Equals(other *Order) bool {
+  if p == other {
+    return true
+  } else if p == nil || other == nil {
+    return false
+  }
+  if p.CustomerName != other.CustomerName { return false }
+  if p.BookName != other.BookName { return false }
+  return true
+}
+
+func (p *Order) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("Order(%+v)", *p)
+}
+
+// Attributes:
 //  - Entry
 type Orders struct {
   Entry map[string][]string `thrift:"entry,1,required" db:"entry" json:"entry"`

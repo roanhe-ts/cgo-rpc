@@ -6,6 +6,7 @@ class BookStore
 {
 private:
     std::vector<CXX::Book> books;
+    CXX::Orders orders;
 
 public:
     BookStore() = default;
@@ -13,6 +14,7 @@ public:
 
     bool hasBook(const CXX::Book& book);
     void addBook(const CXX::Book& book);
+    void addOrder(const CXX::Order& order);
 
     CXX::Orders getOrders();
 };

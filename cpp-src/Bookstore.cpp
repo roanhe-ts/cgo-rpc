@@ -1,5 +1,6 @@
 #include "Bookstore.h"
 #include <map>
+#include <set>
 #include <string>
 
 void BookStore::addBook(const CXX::Book &book_)
@@ -20,9 +21,18 @@ bool BookStore::hasBook(const CXX::Book &book_)
 
 CXX::Orders BookStore::getOrders()
 {
-    CXX::Orders orders;
-    std::set<std::string> books {"Red son"};
-    
-    orders.entry["DDDD"] = books;
     return orders;
+}
+
+void BookStore::addOrder(const CXX::Order &order)
+{
+    if (orders.entry.find(order.customer_name) != orders.entry.end())
+    {
+        orders.entry[order.customer_name].insert(order.book_name);
+    }
+    else
+    {
+        orders.entry.insert(
+            std::pair<std::string, std::set<std::string>>(order.customer_name, std::set<std::string>{order.book_name}));
+    }
 }

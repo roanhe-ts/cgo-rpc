@@ -4,6 +4,7 @@ import (
 	thriftTypes "cgo-thrift/gen-src/gen-go/types"
 	bookstore "cgo-thrift/go-src/Bookstore"
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -19,13 +20,19 @@ func main() {
 		Price: 112,
 	}
 
-	bookstore.AddBook(bs.BookStoreCPtr, book)
+	bs.AddBook(book)
 
-	if bookstore.HasBook(bs.BookStoreCPtr, book) {
+	if bs.HasBook(book) {
 		println("Add succed")
 	}
 
-	orders := bookstore.GetOrders(bs.BookStoreCPtr)
+	var order thriftTypes.Order
+	order.CustomerName = strings.Repeat("Z", 100)
+	order.BookName = strings.Repeat("H", 100)
+
+	bs.AddOrder(order)
+
+	orders := bs.GetOrders()
 	fmt.Println(orders.String())
 
 	return

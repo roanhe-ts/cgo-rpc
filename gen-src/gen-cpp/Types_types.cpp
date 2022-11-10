@@ -267,6 +267,121 @@ void Book::printTo(std::ostream& out) const {
 }
 
 
+Order::~Order() noexcept {
+}
+
+
+void Order::__set_customer_name(const std::string& val) {
+  this->customer_name = val;
+}
+
+void Order::__set_book_name(const std::string& val) {
+  this->book_name = val;
+}
+std::ostream& operator<<(std::ostream& out, const Order& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+uint32_t Order::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_customer_name = false;
+  bool isset_book_name = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->customer_name);
+          isset_customer_name = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->book_name);
+          isset_book_name = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_customer_name)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_book_name)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Order::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Order");
+
+  xfer += oprot->writeFieldBegin("customer_name", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->customer_name);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("book_name", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->book_name);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(Order &a, Order &b) {
+  using ::std::swap;
+  swap(a.customer_name, b.customer_name);
+  swap(a.book_name, b.book_name);
+}
+
+Order::Order(const Order& other4) {
+  customer_name = other4.customer_name;
+  book_name = other4.book_name;
+}
+Order& Order::operator=(const Order& other5) {
+  customer_name = other5.customer_name;
+  book_name = other5.book_name;
+  return *this;
+}
+void Order::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "Order(";
+  out << "customer_name=" << to_string(customer_name);
+  out << ", " << "book_name=" << to_string(book_name);
+  out << ")";
+}
+
+
 Orders::~Orders() noexcept {
 }
 
@@ -307,27 +422,27 @@ uint32_t Orders::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->entry.clear();
-            uint32_t _size4;
-            ::apache::thrift::protocol::TType _ktype5;
-            ::apache::thrift::protocol::TType _vtype6;
-            xfer += iprot->readMapBegin(_ktype5, _vtype6, _size4);
-            uint32_t _i8;
-            for (_i8 = 0; _i8 < _size4; ++_i8)
+            uint32_t _size6;
+            ::apache::thrift::protocol::TType _ktype7;
+            ::apache::thrift::protocol::TType _vtype8;
+            xfer += iprot->readMapBegin(_ktype7, _vtype8, _size6);
+            uint32_t _i10;
+            for (_i10 = 0; _i10 < _size6; ++_i10)
             {
-              std::string _key9;
-              xfer += iprot->readString(_key9);
-              std::set<std::string> & _val10 = this->entry[_key9];
+              std::string _key11;
+              xfer += iprot->readString(_key11);
+              std::set<std::string> & _val12 = this->entry[_key11];
               {
-                _val10.clear();
-                uint32_t _size11;
-                ::apache::thrift::protocol::TType _etype14;
-                xfer += iprot->readSetBegin(_etype14, _size11);
-                uint32_t _i15;
-                for (_i15 = 0; _i15 < _size11; ++_i15)
+                _val12.clear();
+                uint32_t _size13;
+                ::apache::thrift::protocol::TType _etype16;
+                xfer += iprot->readSetBegin(_etype16, _size13);
+                uint32_t _i17;
+                for (_i17 = 0; _i17 < _size13; ++_i17)
                 {
-                  std::string _elem16;
-                  xfer += iprot->readString(_elem16);
-                  _val10.insert(_elem16);
+                  std::string _elem18;
+                  xfer += iprot->readString(_elem18);
+                  _val12.insert(_elem18);
                 }
                 xfer += iprot->readSetEnd();
               }
@@ -361,16 +476,16 @@ uint32_t Orders::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("entry", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_SET, static_cast<uint32_t>(this->entry.size()));
-    std::map<std::string, std::set<std::string> > ::const_iterator _iter17;
-    for (_iter17 = this->entry.begin(); _iter17 != this->entry.end(); ++_iter17)
+    std::map<std::string, std::set<std::string> > ::const_iterator _iter19;
+    for (_iter19 = this->entry.begin(); _iter19 != this->entry.end(); ++_iter19)
     {
-      xfer += oprot->writeString(_iter17->first);
+      xfer += oprot->writeString(_iter19->first);
       {
-        xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(_iter17->second.size()));
-        std::set<std::string> ::const_iterator _iter18;
-        for (_iter18 = _iter17->second.begin(); _iter18 != _iter17->second.end(); ++_iter18)
+        xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(_iter19->second.size()));
+        std::set<std::string> ::const_iterator _iter20;
+        for (_iter20 = _iter19->second.begin(); _iter20 != _iter19->second.end(); ++_iter20)
         {
-          xfer += oprot->writeString((*_iter18));
+          xfer += oprot->writeString((*_iter20));
         }
         xfer += oprot->writeSetEnd();
       }
@@ -389,11 +504,11 @@ void swap(Orders &a, Orders &b) {
   swap(a.entry, b.entry);
 }
 
-Orders::Orders(const Orders& other19) {
-  entry = other19.entry;
+Orders::Orders(const Orders& other21) {
+  entry = other21.entry;
 }
-Orders& Orders::operator=(const Orders& other20) {
-  entry = other20.entry;
+Orders& Orders::operator=(const Orders& other22) {
+  entry = other22.entry;
   return *this;
 }
 void Orders::printTo(std::ostream& out) const {

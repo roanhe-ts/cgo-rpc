@@ -15,3 +15,4 @@ struct binary {
 };
 
 struct binary* getOrders(void* bookStore);
+void addOrder(void* bookStore, void* binary_order, uint32_t size);
