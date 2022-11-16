@@ -3,12 +3,15 @@
 #include <set>
 #include <string>
 
-void BookStore::addBook(const CXX::Book &book_)
+namespace BookStore
+{
+
+void BookStore::addBook(const Book &book_)
 {
     books.push_back(book_);
 }
 
-bool BookStore::hasBook(const CXX::Book &book_)
+bool BookStore::hasBook(const Book &book_)
 {
     for (const auto& book : books)
     {
@@ -35,4 +38,6 @@ void BookStore::addOrder(const CXX::Order &order)
         orders.entry.insert(
             std::pair<std::string, std::set<std::string>>(order.customer_name, std::set<std::string>{order.book_name}));
     }
+}
+
 }

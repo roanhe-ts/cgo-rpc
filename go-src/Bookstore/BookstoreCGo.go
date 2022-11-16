@@ -1,16 +1,15 @@
 package bookstore
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../include -Wvisibility
+#cgo CFLAGS: -I${SRCDIR}/../../include
 #cgo LDFLAGS: -L${SRCDIR}/../../build -lbookstore_c -lbookstore -lthrift -lstdc++
-#include "BookStoreWrapper.h"
+#include "BookstoreWrapper.h"
 #include <stdlib.h>
 */
 import "C"
 import (
 	"bytes"
 	thriftTypes "cgo-thrift/gen-src/gen-go/types"
-	"context"
 	"fmt"
 	"unsafe"
 
@@ -21,32 +20,48 @@ type BookStoreCgo struct {
 	BookStoreCPtr unsafe.Pointer
 }
 
-var defaultCtx = context.Background()
-
-func (bs *BookStoreCgo) HasBook(book thriftTypes.Book) bool {
-	mem_buffer := thrift.NewTMemoryBufferLen(1024)
-	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
-
-	printAndPanicError(book.Write(context.Background(), protocol))
-
-	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
-	size := mem_buffer.Len()
-
-	return bool(C.hasBook(bs.BookStoreCPtr, ptr, C.uint(size)))
+type Author struct {
+	Name string
+	Age  int32
 }
 
-func (bs *BookStoreCgo) AddBook(book thriftTypes.Book) {
-	mem_buffer := thrift.NewTMemoryBufferLen(1024)
-	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
-	printAndPanicError(book.Write(defaultCtx, protocol))
-	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
-	size := mem_buffer.Len()
+type Book struct {
+	Name   string
+	Price  int32
+	Author Author
+}
 
-	C.addBook(bs.BookStoreCPtr, ptr, C.uint(size))
+func (bs *BookStoreCgo) HasBook(book Book) bool {
+
+	return bool(
+		C.hasBook(
+			bs.BookStoreCPtr,
+			C.CBook{
+				name:  C.CString(book.Name),
+				price: C.int32_t(book.Price),
+				author: C.CAuthor{
+					name: C.CString(book.Author.Name),
+					age:  C.int32_t(book.Author.Age),
+				},
+			}),
+	)
+}
+
+func (bs *BookStoreCgo) AddBook(book Book) {
+	C.addBook(
+		bs.BookStoreCPtr,
+		C.CBook{
+			name:  C.CString(book.Name),
+			price: C.int32_t(book.Price),
+			author: C.CAuthor{
+				name: C.CString(book.Author.Name),
+				age:  C.int32_t(book.Author.Age),
+			},
+		})
 }
 
 // Copy C binary and translate it to a Go binary
-func TranslateCBinary2GoBinary(c *C.struct_binary) *bytes.Buffer {
+func TranslateCBinary2GoBinary(c *C.struct_Binary) *bytes.Buffer {
 	if c == nil {
 		return nil
 	}
@@ -70,7 +85,7 @@ func (bs *BookStoreCgo) GetOrders() (orders thriftTypes.Orders) {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	mem_buffer.Buffer = gobinary
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
-	orders.Read(defaultCtx, protocol)
+	orders.Read(protocol)
 	return orders
 }
 
@@ -78,7 +93,7 @@ func (bs *BookStoreCgo) AddOrder(order thriftTypes.Order) {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
 
-	printAndPanicError(order.Write(defaultCtx, protocol))
+	printAndPanicError(order.Write(protocol))
 	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
 	size := mem_buffer.Len()
 

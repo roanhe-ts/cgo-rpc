@@ -5,28 +5,30 @@ import (
 )
 
 type BookStoreGolang struct {
-	books  []thriftTypes.Book
+	books  []Book
 	orders thriftTypes.Orders
 }
 
 func NewBookStoreGolang() *BookStoreGolang {
 	res := new(BookStoreGolang)
-	res.books = make([]thriftTypes.Book, 0)
+	res.books = make([]Book, 0)
 	res.orders = thriftTypes.Orders{}
 	res.orders.Entry = make(map[string][]string)
 	return res
 }
 
-func (bs *BookStoreGolang) HasBook(book thriftTypes.Book) bool {
+func (bs *BookStoreGolang) HasBook(book Book) bool {
 	for _, value := range bs.books {
-		if value.Equals(&book) {
+		deep_equal := value.Author.Age == book.Author.Age && value.Author.Name == book.Author.Name &&
+			value.Name == book.Name && value.Price == book.Price
+		if deep_equal {
 			return true
 		}
 	}
 	return false
 }
 
-func (bs *BookStoreGolang) AddBook(book thriftTypes.Book) {
+func (bs *BookStoreGolang) AddBook(book Book) {
 	bs.books = append(bs.books, book)
 }
 
@@ -38,7 +40,7 @@ func (bs *BookStoreGolang) AddOrder(order thriftTypes.Order) {
 	orders := bs.orders.GetEntry()
 	books, exists := orders[order.CustomerName]
 	if exists {
-		books = append(books, order.BookName)
+		_ = append(books, order.BookName)
 		return
 	} else {
 		orders[order.CustomerName] = []string{order.BookName}

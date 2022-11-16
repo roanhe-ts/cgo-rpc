@@ -15,10 +15,12 @@ func BenchmarkCGoGetOrders2B(b *testing.B) {
 	order.BookName = strings.Repeat("H", 1)
 
 	bookStore.AddOrder(order)
-
 	for i := 0; i < b.N; i++ {
+
 		bookStore.GetOrders()
+
 	}
+
 }
 
 func BenchmarkGolangGetOrders2B(b *testing.B) {
@@ -29,10 +31,11 @@ func BenchmarkGolangGetOrders2B(b *testing.B) {
 	order.BookName = strings.Repeat("H", 1)
 
 	bookStore.AddOrder(order)
-
 	for i := 0; i < b.N; i++ {
+
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkCGoGetOrders200B(b *testing.B) {
@@ -46,8 +49,11 @@ func BenchmarkCGoGetOrders200B(b *testing.B) {
 	bookStore.AddOrder(order)
 
 	for i := 0; i < b.N; i++ {
+
 		bookStore.GetOrders()
+
 	}
+
 }
 
 func BenchmarkGolangGetOrders200B(b *testing.B) {
@@ -58,10 +64,11 @@ func BenchmarkGolangGetOrders200B(b *testing.B) {
 	order.BookName = strings.Repeat("H", 100)
 
 	bookStore.AddOrder(order)
-
 	for i := 0; i < b.N; i++ {
+
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkCGoGetOrders1KB(b *testing.B) {
@@ -72,10 +79,13 @@ func BenchmarkCGoGetOrders1KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 500)
 	order.BookName = strings.Repeat("H", 500)
 
+	bookStore.AddOrder(order)
+
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
+
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkGolangGetOrders1KB(b *testing.B) {
@@ -85,10 +95,11 @@ func BenchmarkGolangGetOrders1KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 500)
 	order.BookName = strings.Repeat("H", 500)
 
+	bookStore.AddOrder(order)
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkCGoGetOrders10KB(b *testing.B) {
@@ -99,10 +110,11 @@ func BenchmarkCGoGetOrders10KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 5000)
 	order.BookName = strings.Repeat("H", 5000)
 
+	bookStore.AddOrder(order)
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkGolangGetOrders10KB(b *testing.B) {
@@ -112,10 +124,11 @@ func BenchmarkGolangGetOrders10KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 5000)
 	order.BookName = strings.Repeat("H", 5000)
 
+	bookStore.AddOrder(order)
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkCGoGetOrders100KB(b *testing.B) {
@@ -126,10 +139,12 @@ func BenchmarkCGoGetOrders100KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 50000)
 	order.BookName = strings.Repeat("H", 50000)
 
+	bookStore.AddOrder(order)
+
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
 		bookStore.GetOrders()
 	}
+
 }
 
 func BenchmarkGolangGetOrders100KB(b *testing.B) {
@@ -139,8 +154,43 @@ func BenchmarkGolangGetOrders100KB(b *testing.B) {
 	order.CustomerName = strings.Repeat("Z", 50000)
 	order.BookName = strings.Repeat("H", 50000)
 
+	bookStore.AddOrder(order)
+
 	for i := 0; i < b.N; i++ {
-		bookStore.AddOrder(order)
+
 		bookStore.GetOrders()
 	}
+
+}
+
+func BenchmarkCGoGetOrders4MB(b *testing.B) {
+	bookStore := BookStoreCgo{}
+	bookStore.BookStoreCPtr = InitBookStore()
+
+	var order thriftTypes.Order
+	order.CustomerName = strings.Repeat("Z", 2000000)
+	order.BookName = strings.Repeat("H", 2000000)
+
+	bookStore.AddOrder(order)
+
+	for i := 0; i < b.N; i++ {
+
+		bookStore.GetOrders()
+	}
+
+}
+
+func BenchmarkGolangGetOrders4MB(b *testing.B) {
+	bookStore := NewBookStoreGolang()
+
+	var order thriftTypes.Order
+	order.CustomerName = strings.Repeat("Z", 2000000)
+	order.BookName = strings.Repeat("H", 2000000)
+
+	bookStore.AddOrder(order)
+
+	for i := 0; i < b.N; i++ {
+		bookStore.GetOrders()
+	}
+
 }

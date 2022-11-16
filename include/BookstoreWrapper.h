@@ -5,14 +5,26 @@
 void* initBookStore();
 void freeBookStore(void*);
 
-bool hasBook(void* bookStore, void* binanry_book, uint32_t size);
+typedef struct {
+    char* name;
+    int32_t age;
+} CAuthor;
 
-void addBook(void* bookStore, void* binanry_book, uint32_t size);
+typedef struct {
+    char* name;
+    int32_t price;
+    CAuthor author;
+} CBook;
 
-struct binary {
+bool hasBook(void* bookStore, CBook book);
+
+void addBook(void* bookStore, CBook book);
+
+typedef struct Binary {
     void* buffer;
     uint32_t size;
-};
+} Binary;
 
-struct binary* getOrders(void* bookStore);
+Binary* getOrders(void* bookStore);
 void addOrder(void* bookStore, void* binary_order, uint32_t size);
+
