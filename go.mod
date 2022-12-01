@@ -1,6 +1,6 @@
 module cgo-thrift
 
-go 1.16
+go 1.18
 
 replace git.apache.org/thrift.git v0.12.0 => github.com/apache/thrift v0.12.0
 

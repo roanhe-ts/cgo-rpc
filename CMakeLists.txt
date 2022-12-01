@@ -18,7 +18,20 @@ add_custom_command(
     WORKING_DIRECTORY
         ${GEN_SRC_DIR}
     COMMENT 
-        "Generating thrift cpp ..."
+        "Generating thrift types cpp ..."
+)
+
+add_custom_command(
+    OUTPUT 
+        ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp ${GEN_SRC_DIR}/gen-cpp/Types_types.h
+    COMMAND 
+        thrift -gen cpp ${GEN_SRC_DIR}/Bookstore.thrift
+    DEPENDS
+        ${GEN_SRC_DIR}/Bookstore.thrift
+    WORKING_DIRECTORY
+        ${GEN_SRC_DIR}
+    COMMENT 
+        "Generating thrift service cpp ..."
 )
 
 add_custom_command(

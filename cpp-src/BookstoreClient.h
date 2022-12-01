@@ -2,7 +2,7 @@
 #include <vector>
 #include "gen-src/gen-cpp/Types_types.h"
 
-namespace BookStore
+namespace BookStoreClient
 {
 
 struct Author
@@ -18,21 +18,21 @@ struct Book
     Author author;
 };
 
-class BookStore
+class BookStoreClient
 {
 private:
     std::vector<Book> books;
-    CXX::Orders orders;
+    thrift::Orders orders;
 
 public:
-    BookStore() = default;
-    BookStore(const std::vector<Book>& books_) : books(books_) {}
+    BookStoreClient() = default;
+    BookStoreClient(const std::vector<Book>& books_) : books(books_) {}
 
     bool hasBook(const Book& book);
     void addBook(const Book& book);
-    void addOrder(const CXX::Order& order);
+    void addOrder(const thrift::Order& order);
 
-    CXX::Orders getOrders();
+    thrift::Orders getOrders();
 };
 
 }

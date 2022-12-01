@@ -1,17 +1,17 @@
-#include "Bookstore.h"
+#include "BookstoreClient.h"
 #include <map>
 #include <set>
 #include <string>
 
-namespace BookStore
+namespace BookStoreClient
 {
 
-void BookStore::addBook(const Book &book_)
+void BookStoreClient::addBook(const Book &book_)
 {
     books.push_back(book_);
 }
 
-bool BookStore::hasBook(const Book &book_)
+bool BookStoreClient::hasBook(const Book &book_)
 {
     for (const auto& book : books)
     {
@@ -22,12 +22,12 @@ bool BookStore::hasBook(const Book &book_)
     return false;
 }
 
-CXX::Orders BookStore::getOrders()
+thrift::Orders BookStoreClient::getOrders()
 {
     return orders;
 }
 
-void BookStore::addOrder(const CXX::Order &order)
+void BookStoreClient::addOrder(const thrift::Order &order)
 {
     if (orders.entry.find(order.customer_name) != orders.entry.end())
     {

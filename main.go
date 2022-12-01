@@ -39,7 +39,8 @@ type Foo struct {
 
 func main() {
 	bs := bookstore.BookStoreCgo{}
-	bs.BookStoreCPtr = bookstore.InitBookStore()
+	bs.Init()
+	defer bs.Free()
 
 	book := bookstore.Book{
 		Name:  "Book1",
@@ -62,7 +63,7 @@ func main() {
 
 	bs.AddOrder(order)
 
-	orders := bs.GetOrders()
+	orders := bs.GetOrdersByThrift()
 	fmt.Println(orders.String())
 
 	// foo := Foo{25, 26}

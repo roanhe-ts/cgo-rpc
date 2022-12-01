@@ -17,7 +17,7 @@ import (
 )
 
 type BookStoreCgo struct {
-	BookStoreCPtr unsafe.Pointer
+	cpointer unsafe.Pointer
 }
 
 type Author struct {
@@ -31,16 +31,28 @@ type Book struct {
 	Author Author
 }
 
+func (bs *BookStoreCgo) Init() {
+	bs.cpointer = C.initBookStore()
+}
+
+func (bs *BookStoreCgo) Free() {
+	C.free(bs.cpointer)
+}
+
 func (bs *BookStoreCgo) HasBook(book Book) bool {
+	book_name := C.CString(book.Name)
+	author_name := C.CString(book.Author.Name)
+	defer C.free(unsafe.Pointer(author_name))
+	defer C.free(unsafe.Pointer(book_name))
 
 	return bool(
 		C.hasBook(
-			bs.BookStoreCPtr,
+			bs.cpointer,
 			C.CBook{
-				name:  C.CString(book.Name),
+				name:  book_name,
 				price: C.int32_t(book.Price),
 				author: C.CAuthor{
-					name: C.CString(book.Author.Name),
+					name: author_name,
 					age:  C.int32_t(book.Author.Age),
 				},
 			}),
@@ -48,13 +60,18 @@ func (bs *BookStoreCgo) HasBook(book Book) bool {
 }
 
 func (bs *BookStoreCgo) AddBook(book Book) {
+	book_name := C.CString(book.Name)
+	author_name := C.CString(book.Author.Name)
+	defer C.free(unsafe.Pointer(author_name))
+	defer C.free(unsafe.Pointer(book_name))
+
 	C.addBook(
-		bs.BookStoreCPtr,
+		bs.cpointer,
 		C.CBook{
-			name:  C.CString(book.Name),
+			name:  book_name,
 			price: C.int32_t(book.Price),
 			author: C.CAuthor{
-				name: C.CString(book.Author.Name),
+				name: author_name,
 				age:  C.int32_t(book.Author.Age),
 			},
 		})
@@ -66,22 +83,15 @@ func TranslateCBinary2GoBinary(c *C.struct_Binary) *bytes.Buffer {
 		return nil
 	}
 
-	var res bytes.Buffer
-
-	for i := 0; i < int(c.size); i++ {
-		begin := uintptr(c.buffer)
-		curr := (*byte)(unsafe.Pointer(begin + uintptr(i)))
-		res.WriteByte(*(curr))
-	}
-
-	return &res
+	return bytes.NewBuffer(unsafe.Slice((*byte)(c.buffer), int32(c.size)))
 }
 
-func (bs *BookStoreCgo) GetOrders() (orders thriftTypes.Orders) {
-	cbinary := C.getOrders(bs.BookStoreCPtr)
-	gobinary := TranslateCBinary2GoBinary(cbinary)
+func (bs *BookStoreCgo) GetOrdersByThrift() (orders thriftTypes.Orders) {
+	cbinary := C.getOrders(bs.cpointer)
 	// Must free c binary after copy.
-	C.free(unsafe.Pointer(cbinary))
+	defer C.free(unsafe.Pointer(cbinary))
+
+	gobinary := TranslateCBinary2GoBinary(cbinary)
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	mem_buffer.Buffer = gobinary
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
@@ -97,11 +107,7 @@ func (bs *BookStoreCgo) AddOrder(order thriftTypes.Order) {
 	ptr := unsafe.Pointer(&mem_buffer.Bytes()[0])
 	size := mem_buffer.Len()
 
-	C.addOrder(bs.BookStoreCPtr, ptr, C.uint(size))
-}
-
-func InitBookStore() unsafe.Pointer {
-	return C.initBookStore()
+	C.addOrder(bs.cpointer, ptr, C.uint(size))
 }
 
 func printAndPanicError(err error) {
