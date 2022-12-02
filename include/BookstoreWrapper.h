@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-void* initBookStore();
-void freeBookStore(void*);
+void* initBSClient();
+void freeBSClient(void*);
 
 typedef struct {
     char* name;
@@ -26,5 +26,6 @@ typedef struct Binary {
 } Binary;
 
 Binary* getOrders(void* bookStore);
+
 void addOrder(void* bookStore, void* binary_order, uint32_t size);
 

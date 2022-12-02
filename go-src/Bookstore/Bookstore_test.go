@@ -7,7 +7,7 @@ import (
 )
 
 func BenchmarkCGoGetOrders2B(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order
@@ -39,7 +39,7 @@ func BenchmarkGolangGetOrders2B(b *testing.B) {
 }
 
 func BenchmarkCGoGetOrders200B(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order
@@ -72,7 +72,7 @@ func BenchmarkGolangGetOrders200B(b *testing.B) {
 }
 
 func BenchmarkCGoGetOrders1KB(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order
@@ -103,7 +103,7 @@ func BenchmarkGolangGetOrders1KB(b *testing.B) {
 }
 
 func BenchmarkCGoGetOrders10KB(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order
@@ -132,7 +132,7 @@ func BenchmarkGolangGetOrders10KB(b *testing.B) {
 }
 
 func BenchmarkCGoGetOrders100KB(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order
@@ -164,7 +164,7 @@ func BenchmarkGolangGetOrders100KB(b *testing.B) {
 }
 
 func BenchmarkCGoGetOrders4MB(b *testing.B) {
-	bookStore := BookStoreCgo{}
+	bookStore := BookStoreCgoClient{}
 	bookStore.BookStoreCPtr = InitBookStore()
 
 	var order thriftTypes.Order

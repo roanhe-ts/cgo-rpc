@@ -2,7 +2,7 @@ package bookstore
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../include
-#cgo LDFLAGS: -L${SRCDIR}/../../build -lbookstore_c -lbookstore -lthrift -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../../build -lbookstorecli_c -lbookstore -lthrift -lstdc++
 #include "BookstoreWrapper.h"
 #include <stdlib.h>
 */
@@ -16,7 +16,7 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 )
 
-type BookStoreCgo struct {
+type BookStoreCgoClient struct {
 	cpointer unsafe.Pointer
 }
 
@@ -31,15 +31,16 @@ type Book struct {
 	Author Author
 }
 
-func (bs *BookStoreCgo) Init() {
-	bs.cpointer = C.initBookStore()
+func (bs *BookStoreCgoClient) Init() {
+	bs.cpointer = C.initBSClient()
 }
 
-func (bs *BookStoreCgo) Free() {
-	C.free(bs.cpointer)
+func (bs *BookStoreCgoClient) Free() {
+	C.freeBSClient(bs.cpointer)
+	bs.cpointer = nil
 }
 
-func (bs *BookStoreCgo) HasBook(book Book) bool {
+func (bs *BookStoreCgoClient) HasBook(book Book) bool {
 	book_name := C.CString(book.Name)
 	author_name := C.CString(book.Author.Name)
 	defer C.free(unsafe.Pointer(author_name))
@@ -59,7 +60,7 @@ func (bs *BookStoreCgo) HasBook(book Book) bool {
 	)
 }
 
-func (bs *BookStoreCgo) AddBook(book Book) {
+func (bs *BookStoreCgoClient) AddBook(book Book) {
 	book_name := C.CString(book.Name)
 	author_name := C.CString(book.Author.Name)
 	defer C.free(unsafe.Pointer(author_name))
@@ -86,7 +87,7 @@ func TranslateCBinary2GoBinary(c *C.struct_Binary) *bytes.Buffer {
 	return bytes.NewBuffer(unsafe.Slice((*byte)(c.buffer), int32(c.size)))
 }
 
-func (bs *BookStoreCgo) GetOrdersByThrift() (orders thriftTypes.Orders) {
+func (bs *BookStoreCgoClient) GetOrdersByThrift() (orders thriftTypes.Orders) {
 	cbinary := C.getOrders(bs.cpointer)
 	// Must free c binary after copy.
 	defer C.free(unsafe.Pointer(cbinary))
@@ -99,7 +100,7 @@ func (bs *BookStoreCgo) GetOrdersByThrift() (orders thriftTypes.Orders) {
 	return orders
 }
 
-func (bs *BookStoreCgo) AddOrder(order thriftTypes.Order) {
+func (bs *BookStoreCgoClient) AddOrder(order thriftTypes.Order) {
 	mem_buffer := thrift.NewTMemoryBufferLen(1024)
 	protocol := thrift.NewTBinaryProtocolFactoryDefault().GetProtocol(mem_buffer)
 

@@ -32,13 +32,8 @@ import (
 	"strings"
 )
 
-type Foo struct {
-	A int32
-	B int32
-}
-
 func main() {
-	bs := bookstore.BookStoreCgo{}
+	bs := bookstore.BookStoreCgoClient{}
 	bs.Init()
 	defer bs.Free()
 

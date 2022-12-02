@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 project(cgo-thrift)
 
-set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(GEN_SRC_DIR ${PROJECT_SOURCE_DIR}/gen-src)
 set(THRIFT_HEADER /usr/local/include)
+
 include_directories(${THRIFT_HEADER})
 
 add_custom_command(
@@ -23,7 +22,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT 
-        ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp ${GEN_SRC_DIR}/gen-cpp/Types_types.h
+        ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp ${GEN_SRC_DIR}/gen-cpp/BookStoreService.h
     COMMAND 
         thrift -gen cpp ${GEN_SRC_DIR}/Bookstore.thrift
     DEPENDS
@@ -48,21 +47,34 @@ add_custom_command(
 )
 
 set(BOOKSTORE_SRC
-    ${CMAKE_SOURCE_DIR}/cpp-src/Bookstore.cpp)
+    ${CMAKE_SOURCE_DIR}/cpp-src/BookstoreServer.cpp
+    ${CMAKE_SOURCE_DIR}/cpp-src/ServerMain.cpp)
 
-add_library(bookstore STATIC ${BOOKSTORE_SRC} ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp ${GEN_SRC_DIR}/gen-cpp/Types_types.h)
-target_link_libraries(bookstore PUBLIC thrift)
-target_include_directories(bookstore PUBLIC ${PROJECT_SOURCE_DIR})
+add_executable(server
+    ${BOOKSTORE_SRC} 
+    ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp 
+    ${GEN_SRC_DIR}/gen-cpp/Types_types.h
+    ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp
+    ${GEN_SRC_DIR}/gen-cpp/BookStoreService.h)
 
-add_library(bookstore_c STATIC ${CMAKE_SOURCE_DIR}/c-src/BookstoreWrapper.cpp)
-target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
-target_link_libraries(bookstore_c PUBLIC bookstore thrift)
+target_link_libraries(server PUBLIC thrift)
+target_include_directories(server PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_options(server PRIVATE "-std=c++14")   # std::make_unique
+
+add_library(bookstorecli_c
+    ${CMAKE_SOURCE_DIR}/c-src/WBookstoreClient.cpp
+    ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp 
+    ${GEN_SRC_DIR}/gen-cpp/Types_types.h
+    ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp)
+# target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
+target_link_libraries(bookstorecli_c PUBLIC bookstore thrift)
+target_include_directories(bookstorecli_c PRIVATE ${PROJECT_SOURCE_DIR})
 
 
-add_custom_target(bookstore_go
+add_custom_target(go-cli
     go
     build
-    -o ${PROJECT_BINARY_DIR}/bookstore_go
+    -o ${PROJECT_BINARY_DIR}/go-cli
     ${PROJECT_SOURCE_DIR}/main.go
 
     DEPENDS

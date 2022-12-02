@@ -8,7 +8,7 @@ struct Order {
 
 struct Orders {
     # 1: required map<string, set cpp_type "std::set<Book, bool(*)(const Book&, const Book&)>" <Book>> entry
-    1: required map<string, set<string>> entry
+    1: required list<Order> entry
 }
 
 struct Author {
