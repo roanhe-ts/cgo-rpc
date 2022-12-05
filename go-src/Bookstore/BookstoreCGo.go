@@ -2,7 +2,7 @@ package bookstore
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../include
-#cgo LDFLAGS: -L${SRCDIR}/../../build -lbookstorecli_c -lbookstore -lthrift -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../../build -lbookstorecli_c -lthrift -lstdc++
 #include "BookstoreWrapper.h"
 #include <stdlib.h>
 */
@@ -109,6 +109,11 @@ func (bs *BookStoreCgoClient) AddOrder(order thriftTypes.Order) {
 	size := mem_buffer.Len()
 
 	C.addOrder(bs.cpointer, ptr, C.uint(size))
+}
+
+func (bs *BookStoreCgoClient) GetBookStoreName(name []byte) {
+	size := len(name)
+	C.getBookStoreName(bs.cpointer, unsafe.Pointer(&name[0]), C.uint32_t(size))
 }
 
 func printAndPanicError(err error) {

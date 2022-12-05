@@ -29,3 +29,5 @@ Binary* getOrders(void* bookStore);
 
 void addOrder(void* bookStore, void* binary_order, uint32_t size);
 
+void getBookStoreName(void* bsclient, void* buf, uint32_t size);
+

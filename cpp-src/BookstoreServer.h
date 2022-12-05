@@ -27,6 +27,8 @@ public:
 
   bool HasBook(const Book& book);
 
+  void GetBookStoreName(std::string &_return, const int32_t size);
+
 private:
     std::vector<Book> books;
     std::unordered_set<std::string> book_sets;

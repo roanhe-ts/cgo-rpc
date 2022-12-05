@@ -1,12 +1,16 @@
 #pragma once
 
+#include <cstdint>
+#include <cstring>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <sys/socket.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/protocol/TProtocol.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/transport/TSocket.h>
+#include <utility>
 #include <vector>
 #include "gen-src/gen-cpp/Types_types.h"
 #include "gen-src/gen-cpp/BookStoreService.h"
@@ -56,6 +60,22 @@ public:
         bool res = client.HasBook(book);
         transport->close();
         return res;
+    }
+
+    // Memory is allocated by caller.
+    void GetBookStoreName(void* buf, uint32_t size)
+    {   
+        BookStoreServiceClient client(protocol);
+        transport->open();
+
+        std::string _return((char*)buf);
+        client.GetBookStoreName(_return, size);
+        std::cout << "_return: " << _return <<" buf add: " << buf << " string add:" << static_cast<const void*>(_return.c_str()) << std::endl;
+
+        mempcpy(buf, _return.c_str(), size);
+        transport->close();
+
+        return;
     }
 
 private:

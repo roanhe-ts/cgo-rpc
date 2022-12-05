@@ -33,9 +33,9 @@ import (
 )
 
 func main() {
-	bs := bookstore.BookStoreCgoClient{}
-	bs.Init()
-	defer bs.Free()
+	bs_client := bookstore.BookStoreCgoClient{}
+	bs_client.Init()
+	defer bs_client.Free()
 
 	book := bookstore.Book{
 		Name:  "Book1",
@@ -46,20 +46,24 @@ func main() {
 		},
 	}
 
-	bs.AddBook(book)
+	bs_client.AddBook(book)
 
-	if bs.HasBook(book) {
+	if bs_client.HasBook(book) {
 		println("Add succed")
 	}
 
 	var order thriftTypes.Order
-	order.CustomerName = strings.Repeat("Z", 100)
-	order.BookName = strings.Repeat("H", 100)
+	order.CustomerName = strings.Repeat("Z", 10)
+	order.BookName = strings.Repeat("H", 10)
 
-	bs.AddOrder(order)
+	bs_client.AddOrder(order)
 
-	orders := bs.GetOrdersByThrift()
+	orders := bs_client.GetOrdersByThrift()
 	fmt.Println(orders.String())
+
+	bs_name := make([]byte, 10)
+	bs_client.GetBookStoreName(bs_name)
+	fmt.Println(string(bs_name))
 
 	// foo := Foo{25, 26}
 	// foos := []Foo{{25, 26}, {50, 51}}

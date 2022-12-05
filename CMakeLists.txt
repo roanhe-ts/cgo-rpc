@@ -69,7 +69,7 @@ add_library(bookstorecli_c
 # target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
 target_link_libraries(bookstorecli_c PUBLIC bookstore thrift)
 target_include_directories(bookstorecli_c PRIVATE ${PROJECT_SOURCE_DIR})
-
+target_compile_options(bookstorecli_c PRIVATE "-std=c++17")   # std::string_view
 
 add_custom_target(go-cli
     go

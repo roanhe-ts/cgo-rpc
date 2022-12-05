@@ -1,5 +1,8 @@
 #include "BookstoreServer.h"
 #include "gen-src/gen-cpp/Types_types.h"
+#include <algorithm>
+#include <iterator>
+#include <iostream>
 #include <memory>
 
 using namespace ::apache::thrift;
@@ -10,7 +13,7 @@ using namespace ::apache::thrift::server;
 void BookstoreServer::Start()
 {
     int port = 9090;
-    
+
     ::apache::thrift::stdcxx::shared_ptr<BookstoreServer> handler(this);
     ::apache::thrift::stdcxx::shared_ptr<TProcessor> processor(new BookStoreServiceProcessor(handler));
     ::apache::thrift::stdcxx::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
@@ -52,4 +55,10 @@ bool BookstoreServer::HasBook(const Book& book)
 {
     printf("HasBook\n");
     return book_sets.count(book.name);
+}
+
+void BookstoreServer::GetBookStoreName(std::string &_return, const int32_t size)
+{
+    _return.append(size, 'A');
+    std::cout << "Name " <<  _return  << " GetBookStoreName size " << size << std::endl;
 }
