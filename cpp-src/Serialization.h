@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SERIALIZATION_H
+#define SERIALIZATION_H
 
 #include <iostream>
 #include <thrift/TApplicationException.h>
@@ -7,7 +8,7 @@
 #include <thrift/transport/TBufferTransports.h>
 #include <vector>
 
-std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_protocol(
+inline std::shared_ptr<apache::thrift::protocol::TProtocol> create_deserialize_protocol(
         std::shared_ptr<apache::thrift::transport::TMemoryBuffer> mem, 
         bool compact)
 {
@@ -63,7 +64,7 @@ public:
         }
     }
 
-    // Serializes obj into result.  Result will contain a copy of the memory.
+    // Serializes obj into result. Result will contain a copy of the memory.
     template <class T>
     bool serialize(T* obj, std::vector<uint8_t>* result) {
         uint32_t len = 0;
@@ -74,7 +75,7 @@ public:
         return true;
     }
 
-    // serialize obj into a memory buffer.  The result is returned in buffer/len.  The
+    // serialize obj into a memory buffer. The result is returned in buffer/len. The
     // memory returned is owned by this object and will be invalid when another object
     // is serialized.
     template <class T>
@@ -124,3 +125,5 @@ private:
     std::shared_ptr<apache::thrift::transport::TMemoryBuffer> mem_buffer;
     std::shared_ptr<apache::thrift::protocol::TProtocol> protocol;
 };
+
+#endif

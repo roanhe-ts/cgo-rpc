@@ -25,7 +25,8 @@ class BookStoreClient
 public:
     BookStoreClient() : socket(new TSocket("localhost", 9090)), transport(new TBufferedTransport(socket)), protocol(new TBinaryProtocol(transport)) {}
 
-    void GetOrders(thrift::Orders& _ret)
+    // virtual for gmock
+    virtual void GetOrders(thrift::Orders& _ret)
     {
         BookStoreServiceClient client(protocol);
         transport->open();
@@ -33,7 +34,7 @@ public:
         transport->close();
     }
 
-    void AddOrder(const thrift::Order order)
+    virtual void AddOrder(const thrift::Order order)
     {
         BookStoreServiceClient client(protocol);
         transport->open();
@@ -41,7 +42,7 @@ public:
         transport->close();
     }
 
-    void AddBook(const thrift::Book book)
+    virtual void AddBook(const thrift::Book book)
     {
         BookStoreServiceClient client(protocol);
         transport->open();
@@ -53,7 +54,7 @@ public:
         transport->close();
     }
 
-    bool HasBook(const thrift::Book book)
+    virtual bool HasBook(const thrift::Book book)
     {
         BookStoreServiceClient client(protocol);
         transport->open();
@@ -63,7 +64,7 @@ public:
     }
 
     // Memory is allocated by caller.
-    void GetBookStoreName(void* buf, uint32_t size)
+    virtual void GetBookStoreName(void* buf, uint32_t size)
     {   
         BookStoreServiceClient client(protocol);
         transport->open();

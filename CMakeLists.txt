@@ -11,9 +11,9 @@ add_custom_command(
     OUTPUT 
         ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp ${GEN_SRC_DIR}/gen-cpp/Types_types.h
     COMMAND 
-        thrift -gen cpp ${GEN_SRC_DIR}/Types.thrift
+        thrift -gen cpp ${GEN_SRC_DIR}/thrift/Types.thrift
     DEPENDS
-        ${GEN_SRC_DIR}/Types.thrift
+        ${GEN_SRC_DIR}/thrift/Types.thrift
     WORKING_DIRECTORY
         ${GEN_SRC_DIR}
     COMMENT 
@@ -24,9 +24,9 @@ add_custom_command(
     OUTPUT 
         ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp ${GEN_SRC_DIR}/gen-cpp/BookStoreService.h
     COMMAND 
-        thrift -gen cpp ${GEN_SRC_DIR}/Bookstore.thrift
+        thrift -gen cpp ${GEN_SRC_DIR}/thrift/Bookstore.thrift
     DEPENDS
-        ${GEN_SRC_DIR}/Bookstore.thrift
+        ${GEN_SRC_DIR}/thrift/Bookstore.thrift
     WORKING_DIRECTORY
         ${GEN_SRC_DIR}
     COMMENT 
@@ -37,7 +37,20 @@ add_custom_command(
     OUTPUT 
         THRIFT_GO_GENS
     COMMAND 
-        thrift -gen go ${GEN_SRC_DIR}/Types.thrift
+        thrift -gen go ${GEN_SRC_DIR}/thrift/Types.thrift
+    DEPENDS
+        ${GEN_SRC_DIR}/Types.thrift
+    WORKING_DIRECTORY
+        ${GEN_SRC_DIR}
+    COMMENT 
+        "Generating thrift go ..."
+)
+
+add_custom_command(
+    OUTPUT 
+        PROTOBUF_GENS
+    COMMAND 
+        thrift -gen go ${GEN_SRC_DIR}/thrift/Types.thrift
     DEPENDS
         ${GEN_SRC_DIR}/Types.thrift
     WORKING_DIRECTORY
@@ -67,8 +80,8 @@ add_library(bookstorecli_c
     ${GEN_SRC_DIR}/gen-cpp/Types_types.h
     ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp)
 # target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
-target_link_libraries(bookstorecli_c PUBLIC bookstore thrift)
-target_include_directories(bookstorecli_c PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(bookstorecli_c PUBLIC thrift)
+target_include_directories(bookstorecli_c PUBLIC ${PROJECT_SOURCE_DIR})
 target_compile_options(bookstorecli_c PRIVATE "-std=c++17")   # std::string_view
 
 add_custom_target(go-cli
@@ -80,3 +93,19 @@ add_custom_target(go-cli
     DEPENDS
         THRIFT_GO_GENS
 )
+
+set(MAKE_TEST TRUE)
+
+if (MAKE_TEST)
+    add_library(bookstorecli_cpp
+        ${CMAKE_SOURCE_DIR}/c-src/WBookstoreClient.cpp
+        ${GEN_SRC_DIR}/gen-cpp/Types_types.cpp 
+        ${GEN_SRC_DIR}/gen-cpp/Types_types.h
+        ${GEN_SRC_DIR}/gen-cpp/BookStoreService.cpp)
+    # target_link_directories(bookstore_c PUBLIC "/usr/local/Cellar/thrift/0.16.0/lib")
+    target_link_libraries(bookstorecli_cpp PUBLIC thrift)
+    target_include_directories(bookstorecli_cpp PUBLIC ${PROJECT_SOURCE_DIR})
+    target_compile_options(bookstorecli_cpp PRIVATE "-std=c++17")   # std::string_view
+    target_compile_definitions(bookstorecli_cpp PUBLIC MAKE_TEST)
+    add_subdirectory(cpp-src/test)
+endif()

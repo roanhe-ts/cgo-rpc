@@ -13,8 +13,10 @@ using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 
+#ifndef MAKE_TEST
 extern "C"
 {
+#endif
 
 typedef struct {
     char* name;
@@ -41,7 +43,7 @@ static thrift::Book ToThriftBook(const CBook& book)
     thrift_book.author.age = book.author.age;
 
     return thrift_book;
-}    
+}
 
 void* initBSClient()
 {
@@ -102,4 +104,6 @@ void getBookStoreName(void* cpp_ptr, void* buf, uint32_t size)
     bsclient->GetBookStoreName(buf, size);
 }
 
+#ifndef MAKE_TEST
 }
+#endif
